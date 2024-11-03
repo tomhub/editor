@@ -258,8 +258,12 @@ export const loadBackup = async (mainWindow, backupOptions) => {
                 // Write CT
                 await Promise.all(files.map(async (file) => {
                     if (/controlledTerminology\/.+/.test(file)) {
-                        let contents = await zip.file(file).async('nodebuffer');
-                        await writeFile(path.join(pathToCT, file.replace('controlledTerminology/', '')), contents);
+                        if (file.indexOf('..') === -1) {
+                            let contents = await zip.file(file).async('nodebuffer');
+                            await writeFile(path.join(pathToCT, file.replace('controlledTerminology/', '')), contents);
+                        } else {
+                            console.log('skipping bad path', file);
+                        }
                     }
                 }));
             }
